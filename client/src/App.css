@@ -1,0 +1,33 @@
+.hide-scrollbar::-webkit-scrollbar{
+    display: none;
+}
+body::-webkit-scrollbar{
+    display: none;
+}
+.slick-dots{
+  position: static !important;
+  display: flex;
+  justify-content: center;
+}
+.slick-dots li{
+  width: 5px !important;
+}
+.slick-dots li:nth-last-child(-n+2){
+  /* display: none; */
+}
+.slick-dots li button:before{
+  color: gray !important;
+  font-size: 8px !important;
+  transition: all ease-in-out 500ms;
+}
+.slick-dots .slick-active button:before{
+  color: #007AFF !important;
+  font-size: 12px !important;
+}
+
+.myaccount-card-2{
+ background: linear-gradient(335deg, hsla(41, 79%, 67%, 0) 10.07%, rgba(207, 163, 70, .15) 79.73%, rgba(215, 172, 80, .4)), #fff
+}
+.my-account-card-1{
+  background-color: rgba(255, 237, 176, 0.3);
+}
