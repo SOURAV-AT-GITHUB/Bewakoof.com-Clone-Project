@@ -2,12 +2,19 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { ADD_EMAIL } from "../../Store/actionTypes";
 import axios from "axios";
-const BACKEND_URL = import.meta.VITE_BACKEND_URL;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 import { useNavigate } from "react-router-dom";
+import {
+  OPEN_SNACKNAR,
+  LOGIN,
+  START_LOADING,
+  STOP_LOADING,
+} from "../../Store/actionTypes";
 export default function Login() {
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [isOtpSent, setIsOtpSent] = useState(false);
-  const { email } = useSelector((store) => store.auth);
+  const { email, token } = useSelector((store) => store.auth);
+  const isLoading = useSelector((store) => store.isLoading);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   useEffect(() => {
@@ -38,17 +45,72 @@ export default function Login() {
     setIsOtpSent(false);
     setOtp(["", "", "", ""]);
   };
-  async function handleCheckUser(event) {
+  async function handleSendOtp(event) {
     event.preventDefault();
-    setIsOtpSent(true);
+    dispatch({ type: START_LOADING });
     try {
-      const response = await axios.get(`${BACKEND_URL}/user/send-otp`, { email });
+      const response = await axios.post(`${BACKEND_URL}/user/send-otp`, {
+        email,
+      });
       if (!response.data.isRegistered) {
         navigate("/signup");
+      } else {
+        dispatch({
+          type: OPEN_SNACKNAR,
+          payload: {
+            open: true,
+            message: `OTP sent to ${email}`,
+            severity: "success",
+          },
+        });
+        setIsOtpSent(true);
       }
-    } catch (error) {}
+    } catch (error) {
+      dispatch({
+        type: OPEN_SNACKNAR,
+        payload: {
+          open: true,
+          message: error.response?.data.message || error.message,
+          severity: "error",
+        },
+      });
+    } finally {
+      dispatch({ type: STOP_LOADING });
+    }
   }
-
+  async function handleLogin(event) {
+    event.preventDefault();
+    dispatch({ type: START_LOADING });
+    try {
+      const response = await axios.post(`${BACKEND_URL}/user/login`, {
+        email,
+        otp: Number(otp.join("")),
+      });
+      dispatch({ type: LOGIN, payload: response.data.data });
+      dispatch({
+        type: OPEN_SNACKNAR,
+        payload: {
+          open: true,
+          message: response.data.message || "Login Success",
+          severity: "success",
+        },
+      });
+    } catch (error) {
+      dispatch({
+        type: OPEN_SNACKNAR,
+        payload: {
+          open: true,
+          message: error.response?.data.message || error.message,
+          severity: "error",
+        },
+      });
+    } finally {
+      dispatch({ type: STOP_LOADING });
+    }
+  }
+  useEffect(() => {
+    if (token) navigate("/");
+  }, [token, navigate]);
   return (
     <main className="flex gap-4 mt-6">
       <img
@@ -79,7 +141,7 @@ export default function Login() {
           </div>
         )}
         <form
-          onSubmit={handleCheckUser}
+          onSubmit={isOtpSent ? handleLogin : handleSendOtp}
           className="flex flex-col  gap-4 text-lg"
         >
           {!isOtpSent ? (
@@ -116,7 +178,8 @@ export default function Login() {
             className="bg-yellow-300 text-white w-full p-3 rounded-md disabled:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={
               (!isOtpSent && !email) ||
-              (isOtpSent && otp.some((val) => val === ""))
+              (isOtpSent && otp.some((val) => val === "")) ||
+              isLoading
             }
           >
             Continue
