@@ -3,7 +3,19 @@ import searchIcon from "/Navbar/search.svg";
 import wishlistIcon from "/Navbar/wishlist.svg";
 import cartIcon from "/Navbar/cart.svg";
 import { NavLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import avatar from "/Navbar/avatar.svg";
+import { OPEN_SNACKNAR, LOGOUT } from "../Store/actionTypes";
 export default function Navbar() {
+  const { token, name } = useSelector((store) => store.auth);
+  const dispatch = useDispatch();
+  function logout() {
+    dispatch({ type: LOGOUT });
+    dispatch({
+      type: OPEN_SNACKNAR,
+      payload: { open: true, severity: "success", message: "Logout success" },
+    });
+  }
   return (
     <nav className="h-[12vh] w-screen bg-red-500">
       <div className="z-10 fixed h-[12vh] left-0 top-0 w-full bg-white border border-slate-300">
@@ -38,9 +50,25 @@ export default function Navbar() {
               />
             </div>
             <span className="h-4/6 w-[2px] bg-gray-300"></span>
-            <NavLink to={"/login"}>
-              <p className="font-medium">LOGIN</p>
-            </NavLink>
+            {token ? (
+              <div className="relative group cursor-pointer">
+                <img src={avatar} alt="" />
+
+                <ul className="absolute -right-20 top-6 bg-white hidden group-hover:flex min-w-[200px] flex-col gap-5 p-4">
+                  <li>Hi , {name}</li>
+                  <li>My Account</li>
+                  <li>My Wishlist</li>
+                  <li>My Orders</li>
+                  <li>My Wallet</li>
+                  <li onClick={logout}>Logout</li>
+                </ul>
+              </div>
+            ) : (
+              <NavLink to={"/login"}>
+                <p className="font-medium">LOGIN</p>
+              </NavLink>
+            )}
+
             <NavLink to="/wishlist">
               <img src={wishlistIcon} alt="wishlist" />
             </NavLink>
