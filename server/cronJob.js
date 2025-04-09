@@ -1,7 +1,6 @@
 const cron = require("node-cron");
 const OTPModel = require("./models/otp.model");
 
-console.log('cronjob started')
 cron.schedule("0 */4 * * *", async () => {
   try {
     const fourHoursAgo = new Date();

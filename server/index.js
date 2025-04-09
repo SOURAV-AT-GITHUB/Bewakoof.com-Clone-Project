@@ -1,9 +1,12 @@
 const express = require("express")
 const DBConnection = require("./config/db")
+const cors = require("cors")
 require("dotenv").config()
 const app = express()
 app.use(express.json())
+app.use(cors())
 const PORT = process.env.PORT || 3002
+require("./cronJob")
 app.get("/",(req,res)=>{
     return res.json({message:"Server is up!!"})
 })
