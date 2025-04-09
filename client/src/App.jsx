@@ -16,11 +16,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { CLOSE_SNACKNAR } from "./Store/actionTypes";
 import { Alert, Snackbar } from "@mui/material";
 import SingleProductPage from "./Pages/SingleProduct/SingleProductPage";
+import NotFound from "./Pages/NoFound";
+import InvalidRedirect from "./Pages/InvalidRedirect";
 function App() {
-  const dispatch = useDispatch()
-  const snackbar = useSelector(store=>store.snackbar)
-  function closeSnackbar (){
-    dispatch({type:CLOSE_SNACKNAR})
+  const dispatch = useDispatch();
+  const snackbar = useSelector((store) => store.snackbar);
+  function closeSnackbar() {
+    dispatch({ type: CLOSE_SNACKNAR });
   }
   return (
     <>
@@ -39,9 +41,16 @@ function App() {
           <Route path="addresses" element={<MyAddresses />} />
           <Route path="profile" element={<MyProfile />} />
         </Route>
-        <Route path="/product/:title" element={<SingleProductPage/>}/>
+        <Route path="/product/:title" element={<SingleProductPage />} />
+        <Route path="/404" element={<NotFound />} />
+        <Route path="*" element={<InvalidRedirect />} />
       </Routes>
-      <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={closeSnackbar}>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={closeSnackbar}
+        anchorOrigin={{vertical:"bottom",horizontal:"center"}}
+      >
         <Alert
           onClose={closeSnackbar}
           severity={snackbar.severity}
