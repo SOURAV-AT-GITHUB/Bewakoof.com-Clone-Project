@@ -7,6 +7,8 @@ app.use(express.json())
 app.use(cors())
 const PORT = process.env.PORT || 3002
 require("./cronJob")
+const UserRouter = require('./routes/user.route')
+app.use("/user",UserRouter)
 app.get("/",(req,res)=>{
     return res.json({message:"Server is up!!"})
 })
