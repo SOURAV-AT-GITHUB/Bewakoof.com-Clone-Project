@@ -18,9 +18,12 @@ import { Alert, Snackbar } from "@mui/material";
 import SingleProductPage from "./Pages/SingleProduct/SingleProductPage";
 import NotFound from "./Pages/NoFound";
 import InvalidRedirect from "./Pages/InvalidRedirect";
+import Dialog from "@mui/material/Dialog";
+import loadingImage from "/loader.gif";
 function App() {
   const dispatch = useDispatch();
   const snackbar = useSelector((store) => store.snackbar);
+  const isLoading = useSelector((store) => store.isLoading);
   function closeSnackbar() {
     dispatch({ type: CLOSE_SNACKNAR });
   }
@@ -49,7 +52,7 @@ function App() {
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={closeSnackbar}
-        anchorOrigin={{vertical:"bottom",horizontal:"center"}}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
           onClose={closeSnackbar}
@@ -60,6 +63,16 @@ function App() {
           {snackbar.message}
         </Alert>
       </Snackbar>
+      <Dialog open={isLoading}>
+        <div className="w-full h-full flex items-center justify-center p-4">
+          <img
+            src={loadingImage}
+            alt="loading"
+            loading="lazy"
+            className="max-w-[200px]"
+          />
+        </div>
+      </Dialog>
     </>
   );
 }
